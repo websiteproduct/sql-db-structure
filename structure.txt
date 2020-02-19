@@ -1,0 +1,124 @@
+//// -- LEVEL 1
+//// -- Tables and References
+
+// Creating tables
+Table User as U {
+  id int [pk, increment] // auto-increment
+  fName varchar
+  lName varchar
+  bDay date
+  email varchar
+  phone varchar
+  roleId int
+  password md5
+  courseId int
+  groupId int
+  bio varchar
+}
+
+Table Lead as L {
+  id int [pk, increment] // auto-increment
+  fName varchar
+  lName varchar
+  bDay date
+  email varchar
+  phone varchar
+  courseId int 
+  comment varchar
+  source varchar
+}
+Table News as N {
+  id int [pk, increment] // auto-increment
+  title varchar
+  content varchar
+  date date
+  groupId int
+  authorId int
+}
+
+Table Group as G {
+  id int [pk, increment]
+  name varchar
+  startDate date
+  endDate date
+  //admin_id int [ref: > U.id] // inline relationship (many-to-one)
+}
+
+Table Role as R {
+  id int [pk, increment]
+  name varchar
+  accessPolicyId int
+}
+
+Table AccessPolicy as AP {
+  id int [pk, increment]
+  name varchar
+  news boolean
+  userEdit boolean
+}
+
+Table Course as C {
+  id int [pk, increment]
+  name varchar
+  description varchar
+  duration int
+  price int
+}
+
+Table CourseSchedule as S {
+  id int [pk, increment]
+  courseId int
+  // date date
+  // time time
+  lessonTopic varchar
+  description varchar
+  order int [default: 1]
+}
+Table GroupTeacher as GT {
+  id int [pk, increment]
+  groupId int
+  teacherId int
+  scheduleId int
+}
+
+// Creating references
+// You can also define relaionship separately
+// > many-to-one; < one-to-many; - one-to-one
+Ref: U.courseId > C.id
+Ref: L.courseId > C.id
+Ref: S.courseId > C.id
+Ref: GT.scheduleId > S.id
+Ref: U.groupId > G.id
+Ref: N.groupId > G.id
+Ref: U.roleId > R.id
+Ref: G.id > GT.groupId
+Ref: GT.teacherId > U.id
+Ref: R.accessPolicyId > AP.id
+Ref: N.authorId > U.id
+//Ref: merchants.country_code > countries.code
+
+//----------------------------------------------//
+
+//// -- LEVEL 2
+//// -- Adding column settings
+
+Table Journal as J {
+  id int [pk, increment]
+  groupId int
+  date date
+  comment varchar
+  subject varchar
+  homework varchar
+}
+
+Table JournalDetail as JD {
+  id int [pk, increment]
+  journalId int
+  comment varchar
+  studentId int
+  isVisited boolean
+}
+
+Ref: J.id > JD.journalId
+Ref: J.groupId > G.id
+Ref: JD.studentId > U.id
